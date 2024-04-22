@@ -1,9 +1,10 @@
 import { createTransport } from 'nodemailer';
-import config from './config'; // config 파일에서 설정을 가져옴
+import config from './config';
+
+const receiver: string = 'ksw09157@naver.com';
 
 interface RegisterUserDTO {
   email: string;
-  // 다른 필요한 사용자 정보 필드 추가
 }
 
 class UserService {
@@ -34,10 +35,36 @@ class UserService {
       console.error(err);
     }
   };
+
+  static sendMail = async () => {
+    const transporter = createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'ksw09157.5212@gmail.com',
+        pass: config.mailer.gmailPassword,
+      },
+    });
+
+    const mailOptions = {
+      from: 'ksw09157.5212@gmail.com',
+      to: receiver,
+      subject: '이메일 제목',
+      text: 'Node.js의 Nodemailer + Google SMTP를 사용해서 보낸 메일입니다!',
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+  };
 }
 
 const tempUser: RegisterUserDTO = {
-  email: 'example@example.com',
+  email: receiver,
 };
 
 UserService.register(tempUser);
+UserService.sendMail();
